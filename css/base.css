@@ -1,0 +1,8 @@
+body{background-image: url(../img/bg.jpg)}
+.top .search{
+    margin: 190px 0;
+    text-align: center;
+}
+.top h1{
+    font-size: 60px;
+}
