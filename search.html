@@ -5,10 +5,11 @@
     <meta name="generator" content="Adobe GoLive" />
     <title>search [snip]</title>
     <!-- css -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/prettify.css" media="screen">
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" media="screen">
     <link rel="stylesheet" type="text/css" href="css/base.css" media="screen">
 </head>
-<body class="top">
+<body>
 <div class="container">
     <!-- navigation -->
     <div class="navbar navbar-fixed-top">
@@ -18,10 +19,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="brand" href="#">Snip</a>
+                <a class="brand" href="index.html">Snip</a>
                 <div class="nav-collapse collapse">
                     <ul class="nav">
-                        <li><a href="search.html">search</a></li>
+                        <li class="active"><a href="#">search</a></li>
                         <li><a href="config.html">config</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
@@ -29,26 +30,26 @@
         </div>
     </div><!--/.nav-bar -->
 
-    <div class="search">
+    <!-- contents -->
+    <div class="search clearfix">
         <div ng-controller="searchCtrl">
-            <h1 class="title">Snip</h1>
-            <h4>search yourself</h4>
-            <!--<form class="form-search" action="search.cgi">-->
-            <form class="form-search" action="">
+            <form class="form-search" ng-submit="search();" action="">
                 <div class="input-append">
                     <input ng-model="query" class="span5 search-query" type="text" placeholder="clearfix">
-                    <button class="btn" type="submit">&nbsp;<i class="icon-search"></i>&nbsp;</button>
+                    <button class="btn" type="submit">&nbsp;<i class="icon-search" ></i>&nbsp;</button>
                 </div>
-                <ul>
-                    <li ng-repeat="hit in hits">{{hit}}</li>
-                </ul>
+                <div class="hit" ng-repeat="hit in hits">
+                    <pre class="prettyprint linenums"><ol class="linenums"><li ng-repeat="line in hit" class="L{{$index}}"><span class="pln">{{line}}</span></li></ol></pre>
+                </div>
             </form>
         </div>
     </div>
     <!-- js -->
     <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js" charset="utf-8"></script>
+    <script language="javascript" type="text/javascript" src="google-code-prettify/prettify.js" charset="utf-8"></script>
     <script language="javascript" type="text/javascript" src="bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
-    <script language="javascript" type="text/javascript" src="js/angular.min.js" charset="utf-8"></script>
+    <script language="javascript" type="text/javascript" src="js/angular.js" charset="utf-8"></script>
+    <!--<script language="javascript" type="text/javascript" src="js/angular.min.js" charset="utf-8"></script>-->
     <script language="javascript" type="text/javascript" src="js/snip.js" charset="utf-8"></script>
 </body>
 </html>
