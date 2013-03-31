@@ -2,23 +2,25 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-from logger import logger
 import urllib
 import json
-import pycurl
-import StringIO
 import mimetypes
+import StringIO
+import pycurl
+
 encoding = sys.getdefaultencoding()
 
 class Curl(object):
     result = ""
     func = ""
     def __init__(self, url="", x="", d=""):
-        self.url = url
-        if not isinstance(url, str):
+        if isinstance(url, str):
+            self.url = url
+        else:
             self.url = url.encode(encoding, "replace")
-        self.data = d
-        if not isinstance(d, str):
+        if isinstance(d, str):
+            self.data = d
+        else:
             self.data = d.encode(encoding, "replace")
         if x == "PUT":
             self.func = self.put
@@ -31,11 +33,6 @@ class Curl(object):
         if self.func:
             self.func()
         return self
-
-    def str(self, data):
-        if not isinstance(data, str):
-            return
-        return data
 
     def get(self):
         c = pycurl.Curl()
@@ -103,7 +100,6 @@ class ElasticSearch(object):
         res = json.loads(curl.result)
         print res
 
-
 #path = "/Users/murakami/Sites/jglobal_2013"
 path = "/Users/murakami/svns/nishitetsu_kensetsu"
 #path = "/Users/murakami/git/jukebox/"
@@ -130,10 +126,9 @@ for name in targets:
         for line in f.readlines():
             text += line.decode("utf-8", "replace")
         es = ElasticSearch(u"murakami", mime[1])
-        #print name
         text = urllib.quote(text.encode("utf-8", "replace"))
         data = {
-            u"name": u"%s" % name.decode("utf-8", "replace"),
+            #u"name": u"%s" % name.decode("utf-8", "replace"),
             u"text": u"%s" % text.decode("utf-8", "replace")
         }
         es.put(data)
