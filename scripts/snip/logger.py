@@ -5,7 +5,7 @@ import os, logging
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
-                    #filename=os.path.join(settings.PROJECT_ROOT, 'log/nishitetsu.log'),
+                    #filename=os.path.join(settings.PROJECT_ROOT, 'log/app.log'),
                     filemode='a')
 
 logger = logging
