@@ -35,9 +35,10 @@
         <div ng-controller="searchCtrl">
             <form class="form-search" ng-submit="search();" action="">
                 <div class="input-append">
-                    <input ng-model="query" class="span5 search-query" type="text" placeholder="clearfix">
-                    <button class="btn" type="submit">&nbsp;<i class="icon-search" ></i>&nbsp;</button>
+                    <input tabindex=1 ng-model="query" class="span5 search-query" type="text" placeholder="clearfix">
+                    <button tabindex=2 class="btn" type="submit">&nbsp;<i class="icon-search" ></i>&nbsp;</button>
                 </div>
+		<div><p>#{{hitnum}}</p></div>
                 <div class="hit" ng-repeat="hit in hits">
                     <pre class="prettyprint linenums"><ol class="linenums"><li ng-repeat="line in hit" class="L{{$index}}"><span class="pln">{{line}}</span></li></ol></pre>
                 </div>

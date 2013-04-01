@@ -11,22 +11,22 @@ import pycurl
 encoding = sys.getdefaultencoding()
 
 class Curl(object):
-    result = ""
-    func = ""
-    def __init__(self, url="", x="", d=""):
+    result = u''
+    func = u''
+    def __init__(self, url='', x='', d=''):
         if isinstance(url, str):
             self.url = url
         else:
-            self.url = url.encode(encoding, "replace")
+            self.url = url.encode(encoding, u'replace')
         if isinstance(d, str):
             self.data = d
         else:
-            self.data = d.encode(encoding, "replace")
-        if x == "PUT":
+            self.data = d.encode(encoding, u'replace')
+        if x == u'PUT':
             self.func = self.put
-        elif x == "GET":
+        elif x == u'GET':
             self.func = self.get
-        elif x == "POST":
+        elif x == u'POST':
             self.func = self.post
 
     def perform(self):
@@ -72,65 +72,86 @@ class Curl(object):
         return self
 
 class ElasticSearch(object):
-    host = "localhost"
-    port = "9200"
+    host = u'localhost'
+    port = u'9200'
 
     def __init__(self, index, doctype):
         self.index = index
         self.type = doctype
 
     def put(self, dic={}):
-        dicstr = u""
-        for key, value in dic.items():
-            dicstr += u'"%s":"%s", ' % (key, value)
-        if not dicstr:
-            return False
-        url = u"http://%s:%s/%s/%s" % (self.host, self.port, self.index, self.type)
-        data = u"{%s}" % dicstr[:-2]
-        Curl(url, x="POST", d=data).perform()
+        dump = {}
+        for k, v in dic.items():
+            key = k.encode(u'utf-8', u'replace')
+            value = urllib.quote(v.encode(u'utf-8', u'replace'))
+            dump[key] = value
+        url = u'http://%s:%s/%s/%s' % (self.host, self.port, self.index, self.type)
+        data = json.dumps(dump)
+        #print data
+        Curl(url, x=u'POST', d=data).perform()
 
-    def get(self, dic={}):
-        dicstr = ""
-        for key, value in dic.items():
-            dicstr += '%s:%s&' % (urllib.quote(key), urllib.quote(value))
-        if not dicstr:
-            return False
-        url = u"http://%s:%s/%s/%s/_search?q=%s" % (self.host, self.port, self.index, self.type, dicstr[:-1])
-        curl = Curl(url, x="GET", d="").perform()
+    def get(self, fields=[], dic={}):
+        dump = {}
+        for k, v in dic.items():
+            key = k.encode(u'utf-8', u'replace')
+            value = urllib.quote_plus(v.encode(u'utf-8', u'replace'))
+            dump[k] = v
+        url = u'http://%s:%s/%s/%s/_search' % (self.host, self.port, self.index, self.type)
+        if fields:
+            url += u"?fields="
+            for i, field in enumerate(fields):
+                if i > 0:
+                    url += ","
+                url += field
+
+        data = json.dumps(dump)
+        curl = Curl(url, x='GET', d=data).perform()
+        print curl.result
         res = json.loads(curl.result)
         print res
 
-#path = "/Users/murakami/Sites/jglobal_2013"
-path = "/Users/murakami/svns/nishitetsu_kensetsu"
-#path = "/Users/murakami/git/jukebox/"
-#path = "/Users/murakami/virtualenv/py2.7/lib"
-#path = "/Users/murakami/hoge/"
+path = '/Users/murakami/Sites/jglobal_2013'
+#path = '/Users/murakami/svns/nishitetsu_kensetsu'
+#path = '/Users/murakami/git/jukebox/'
+#path = '/Users/murakami/virtualenv/py2.7/lib'
+#path = '/Users/murakami/hoge/'
 targets = []
-excludes = [".git", ".svn"]
+excludes = ['.git', '.svn']
 
 for root, dirs, files in os.walk(path, topdown=True):
     dirs[:] = [d for d in dirs if d not in excludes]
     for f in files:
-        if ".min." in f:
+        if '.min.' in f:
             continue
         targets.append(os.path.join(root, f))
 
 for name in targets:
+    #continue
     guess = mimetypes.guess_type(name)
     if not guess[0]:
         continue
-    mime = guess[0].split("/")
-    if mime[0] == "text":
+    mime = guess[0].split('/')
+    if mime[0] == 'text':
         f = open(name)
-        text = ""
+        text = ''
+        #text = f.readline()
         for line in f.readlines():
-            text += line.decode("utf-8", "replace")
-        es = ElasticSearch(u"murakami", mime[1])
-        text = urllib.quote(text.encode("utf-8", "replace"))
+            text += line.decode('utf-8', 'replace')
+        es = ElasticSearch(u'murakami', mime[1])
         data = {
-            #u"name": u"%s" % name.decode("utf-8", "replace"),
-            u"text": u"%s" % text.decode("utf-8", "replace")
+            u'name': u'%s' % name.decode('utf-8', 'replace'),
+            u'text': u'%s' % text
         }
         es.put(data)
         print
         f.close()
+
+#ElasticSearch(u'murakami', u'css').get(fields=["text"])
+
+# f = open('/Users/murakami/Sites/snip/esdata')
+# for line in f.readlines():
+#     text = line.decode('utf-8', 'replace')
+#     res = json.loads(text)
+#     print res['text']
+# f.close()
+
