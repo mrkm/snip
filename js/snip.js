@@ -7,7 +7,6 @@ var searchCtrl = function($scope, $http){
         };
         //jq = JSON.stringify(query);
         //$http({method: 'GET', url: "http://localhost:9200/murakami/x-python/_search?", data: jq}).
-	console.log(query);
         $http({method: 'GET', url: "http://localhost:9200/murakami/css/_search?fields=text", params: query}).
             success(function(data, status, headers, config) {
                 // this callback will be called asynchronously
@@ -23,10 +22,7 @@ var searchCtrl = function($scope, $http){
             error(function(data, status, headers, config) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.log(data);
-                console.log(status);
-                console.log(headers);
-                console.log(config);
+		if(status == 0){$scope.error="Connection refused."}
             });
 
     }
