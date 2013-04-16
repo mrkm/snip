@@ -106,48 +106,53 @@ class ElasticSearch(object):
 
         data = json.dumps(dump)
         curl = Curl(url, x='GET', d=data).perform()
-        print curl.result
         res = json.loads(curl.result)
-        print res
-
-path = '/Users/murakami/Sites/jglobal_2013'
-#path = '/Users/murakami/svns/nishitetsu_kensetsu'
-#path = '/Users/murakami/git/jukebox/'
-#path = '/Users/murakami/virtualenv/py2.7/lib'
-#path = '/Users/murakami/hoge/'
-targets = []
-excludes = ['.git', '.svn']
-
-for root, dirs, files in os.walk(path, topdown=True):
-    dirs[:] = [d for d in dirs if d not in excludes]
-    for f in files:
-        if '.min.' in f:
-            continue
-        targets.append(os.path.join(root, f))
-
-for name in targets:
-    #continue
-    guess = mimetypes.guess_type(name)
-    if not guess[0]:
-        continue
-    mime = guess[0].split('/')
-    if mime[0] == 'text':
-        f = open(name)
-        text = ''
-        #text = f.readline()
-        for line in f.readlines():
-            text += line.decode('utf-8', 'replace')
-        es = ElasticSearch(u'murakami', mime[1])
-        data = {
-            u'name': u'%s' % name.decode('utf-8', 'replace'),
-            u'text': u'%s' % text
-        }
-        es.put(data)
-        print
-        f.close()
-
-#ElasticSearch(u'murakami', u'css').get(fields=["text"])
-
+        total = res['hits']['total']
+        max_score = res['hits']['max_score']
+        texts = res['hits']['hits']
+        name = res['hits']['hits'][0]['fields']['name']
+        hits = []
+        while texts:
+            text = texts.pop(0)
+            hits.append({'name':name,
+                         'text':urllib.unquote(text['fields']['text'])
+                         })
+        return {"hits":hits, "total":total}
+    
+# path = '/Users/murakami/Sites/jglobal_2013'
+# path = '/Users/murakami/svns/nishitetsu_kensetsu'
+# path = '/Users/murakami/git/jukebox/'
+# path = '/Users/murakami/virtualenv/py2.7/lib'
+# path = '/Users/murakami/hoge/'
+# targets = []
+# excludes = ['.git', '.svn']
+# for root, dirs, files in os.walk(path, topdown=True):
+#     dirs[:] = [d for d in dirs if d not in excludes]
+#     for f in files:
+#         if '.min.' in f:
+#             continue
+#         targets.append(os.path.join(root, f))
+# for name in targets:
+#     #continue
+#     guess = mimetypes.guess_type(name)
+#     if not guess[0]:
+#         continue
+#     mime = guess[0].split('/')
+#     if mime[0] == 'text':
+#         f = open(name)
+#         text = ''
+#         #text = f.readline()
+#         for line in f.readlines():
+#             text += line.decode('utf-8', 'replace')
+#         es = ElasticSearch(u'murakami', mime[1])
+#         data = {
+#             u'name': u'%s' % name.decode('utf-8', 'replace'),
+#             u'text': u'%s' % text
+#         }
+#         es.put(data)
+#         print
+#         f.close()
+# ElasticSearch(u'murakami', u'css').get(fields=["text"])
 # f = open('/Users/murakami/Sites/snip/esdata')
 # for line in f.readlines():
 #     text = line.decode('utf-8', 'replace')

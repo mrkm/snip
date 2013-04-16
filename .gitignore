@@ -36,3 +36,6 @@ nosetests.xml
 
 #PyCharm
 .idea
+
+#MacOS
+.DS_Store
